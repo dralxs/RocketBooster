@@ -23,6 +23,7 @@ namespace RocketBooster
         private int damage;
         private float angle;
         private Vector2 imageCenter;
+        private const float RotationSpeed = 0.1f;
 
         public Vector2 _cameraPosition;
 
@@ -32,10 +33,10 @@ namespace RocketBooster
         {
             _camera = camera;
             _cameraPosition = new Vector2(0, 0);
-            speed = 5;
+            Speed = 500;
             damage = 1;
         }
-
+        
         public void LoadContent(ContentManager content)
         {
             this.rocketTexture = content.Load<Texture2D>("rocket1");
@@ -49,14 +50,14 @@ namespace RocketBooster
 
         public void MoveCamera(GameTime gameTime)
         {
-            var speed = 200;
             var seconds = gameTime.GetElapsedSeconds();
             var movementDirection = GetMovementDirection();
-            this._cameraPosition += speed * movementDirection * seconds;
+            this._cameraPosition += this.speed * movementDirection * seconds;
         }
 
+        public int Speed { get => speed; set => speed = value; }
+
         // PRIVATE FUNCTION //
-        private const float RotationSpeed = 0.1f;
 
         private Vector2 GetMovementDirection()
         {

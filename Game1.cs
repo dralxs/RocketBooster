@@ -17,7 +17,8 @@ namespace RocketBooster
         TiledMap _tiledMap;
         TiledMapRenderer _tiledMapRenderer;
         private OrthographicCamera _camera;
-        private SpriteFont font;
+        private SpriteFont camerapositionfont;
+        private SpriteFont speedfont;
 
         private Rocket playerRocket;
 
@@ -56,7 +57,8 @@ namespace RocketBooster
             _tiledMap = Content.Load<TiledMap>("rocketboostermap");
             _tiledMapRenderer = new TiledMapRenderer(GraphicsDevice, _tiledMap);
             // Debug Panel
-            font = Content.Load<SpriteFont>("CameraPosition");
+            camerapositionfont = Content.Load<SpriteFont>("CameraPosition");
+            speedfont = Content.Load<SpriteFont>("Speed");
             
         }
 
@@ -82,7 +84,8 @@ namespace RocketBooster
 
             // Draw the rocket 
             playerRocket.Draw(_spriteBatch, this.screenCenter);
-            _spriteBatch.DrawString(font, "CameraPosition : " + playerRocket._cameraPosition, new Vector2(0,0), Color.Black);
+            _spriteBatch.DrawString(camerapositionfont, "CameraPosition : " + playerRocket._cameraPosition, new Vector2(0,0), Color.Black);
+            _spriteBatch.DrawString(speedfont, "Speed : " + playerRocket.Speed, new Vector2(0, 15), Color.Black);
 
             // End of the drawing
             _spriteBatch.End();

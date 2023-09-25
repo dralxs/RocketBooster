@@ -50,3 +50,10 @@
 /processor:TiledMapProcessor
 /build:rocketboostermap.tmx
 
+#begin Speed.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Compressed
+/build:Speed.spritefont
+
