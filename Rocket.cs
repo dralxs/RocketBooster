@@ -45,7 +45,7 @@ namespace RocketBooster
         public void Draw(SpriteBatch spriteBatch, Vector2 screenCenter)
         {
             this.imageCenter = new Vector2(rocketTexture.Width / 2f, rocketTexture.Height / 2f);
-            spriteBatch.Draw(rocketTexture, screenCenter, null, Color.White, this.angle, imageCenter, 1f, SpriteEffects.None, 0f);
+            spriteBatch.Draw(this.rocketTexture, screenCenter, null, Color.White, this.angle, imageCenter, 1f, SpriteEffects.None, 0f);
         }
 
         public void MoveCamera(GameTime gameTime)
@@ -57,9 +57,7 @@ namespace RocketBooster
 
         public int Speed { get => speed; set => speed = value; }
 
-        // PRIVATE FUNCTION //
-
-        private Vector2 GetMovementDirection()
+        public Vector2 GetMovementDirection()
         {
             var movementDirection = Vector2.Zero;
             var state = Keyboard.GetState();

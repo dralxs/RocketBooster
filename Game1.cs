@@ -5,7 +5,8 @@ using MonoGame.Extended.Tiled;
 using MonoGame.Extended.Tiled.Renderers;
 using MonoGame.Extended;
 using MonoGame.Extended.ViewportAdapters;
-
+using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace RocketBooster
 {
@@ -19,6 +20,7 @@ namespace RocketBooster
         private OrthographicCamera _camera;
         private SpriteFont camerapositionfont;
         private SpriteFont speedfont;
+        private List<Asteroid> asteroids;
 
         private Rocket playerRocket;
 
@@ -44,6 +46,8 @@ namespace RocketBooster
             // Get the center of the screen
             Viewport viewport = _graphics.GraphicsDevice.Viewport;
             screenCenter =  new Vector2(viewport.Width / 2f, viewport.Height / 2f);
+            // List of asteroid
+            asteroids = new List<Asteroid>();
 
             base.Initialize();
         }
@@ -53,8 +57,13 @@ namespace RocketBooster
             _spriteBatch = new SpriteBatch(GraphicsDevice);
             // Texture rocket
             playerRocket.LoadContent(this.Content);
-            //asteroidTexture = Content.Load<Texture2D>("asteroid1");
-            _tiledMap = Content.Load<TiledMap>("rocketboostermap");
+            _tiledMap = Content.Load<TiledMap>("maprocketbooster");
+            SpawnObstacles(_tiledMap);
+            // Texture asteroids
+            foreach (var asteroid in asteroids)
+            {
+                asteroid.LoadContent(Content);
+            }
             _tiledMapRenderer = new TiledMapRenderer(GraphicsDevice, _tiledMap);
             // Debug Panel
             camerapositionfont = Content.Load<SpriteFont>("CameraPosition");
@@ -71,6 +80,11 @@ namespace RocketBooster
             // Update the camera 
             playerRocket.MoveCamera(gameTime);
             _camera.LookAt(playerRocket._cameraPosition);
+            // Update asteroids 
+            foreach (var asteroid in asteroids)
+            {
+                asteroid.Update(gameTime, playerRocket);
+            }
 
             base.Update(gameTime);
         }
@@ -86,13 +100,29 @@ namespace RocketBooster
             playerRocket.Draw(_spriteBatch, this.screenCenter);
             _spriteBatch.DrawString(camerapositionfont, "CameraPosition : " + playerRocket._cameraPosition, new Vector2(0,0), Color.Black);
             _spriteBatch.DrawString(speedfont, "Speed : " + playerRocket.Speed, new Vector2(0, 15), Color.Black);
-
+            _tiledMapRenderer.Draw(_camera.GetViewMatrix());
+            // Draw asteroids
+            foreach (var asteroid in asteroids)
+            {
+                asteroid.Draw(_spriteBatch);
+            }
+            
             // End of the drawing
             _spriteBatch.End();
 
-            _tiledMapRenderer.Draw(_camera.GetViewMatrix());
-
             base.Draw(gameTime);
+        }
+
+        public void SpawnObstacles(TiledMap tiledMap)
+        {
+            var objects = tiledMap.GetLayer<TiledMapObjectLayer>("AsteroidSpawn").Objects;
+
+            foreach (var obj in objects)
+            {
+                var asteroid = new Asteroid(this, obj.Position);
+                Debug.WriteLine("Asteroid position : ", asteroid.Position);
+                asteroids.Add(asteroid);
+            }
         }
     }
 }

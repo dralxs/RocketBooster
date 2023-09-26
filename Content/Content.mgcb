@@ -33,6 +33,11 @@
 /processorParam:TextureFormat=Compressed
 /build:CameraPosition.spritefont
 
+#begin maprocketbooster.tmx
+/importer:TiledMapImporter
+/processor:TiledMapProcessor
+/build:maprocketbooster.tmx
+
 #begin rocket1.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -44,11 +49,6 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:rocket1.png
-
-#begin rocketboostermap.tmx
-/importer:TiledMapImporter
-/processor:TiledMapProcessor
-/build:rocketboostermap.tmx
 
 #begin Speed.spritefont
 /importer:FontDescriptionImporter
