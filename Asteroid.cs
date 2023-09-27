@@ -38,9 +38,8 @@ namespace RocketBooster
         }
         public override void Update(GameTime gameTime, Rocket playerRocket)
         {
-            var speed = 200;
             Vector2 oppositeDirection = -playerRocket.GetMovementDirection();
-            this.Position += oppositeDirection * speed * (float)gameTime.ElapsedGameTime.TotalSeconds;
+            this.Position += oppositeDirection * playerRocket.Speed * (float)gameTime.ElapsedGameTime.TotalSeconds;
         }
 
     }
