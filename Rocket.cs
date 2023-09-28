@@ -12,10 +12,11 @@ using System.Reflection.Metadata;
 using Microsoft.Xna.Framework.Content;
 using MonoGame.Extended.Screens;
 using System.Diagnostics;
+using MonoGame.Extended.Collisions;
 
 namespace RocketBooster
 {
-    internal class Rocket
+    internal class Rocket : IEntity
     {
         Texture2D rocketTexture;
         private OrthographicCamera _camera;   
@@ -24,8 +25,9 @@ namespace RocketBooster
         private float angle;
         private Vector2 imageCenter;
         private const float RotationSpeed = 0.1f;
-
         public Vector2 _cameraPosition;
+        private RectangleF _bounds;
+
 
         // PUBLIC FUNCTION //
 
@@ -35,6 +37,7 @@ namespace RocketBooster
             _cameraPosition = new Vector2(0, 0);
             Speed = 500;
             damage = 1;
+
         }
         
         public void LoadContent(ContentManager content)
@@ -45,7 +48,15 @@ namespace RocketBooster
         public void Draw(SpriteBatch spriteBatch, Vector2 screenCenter)
         {
             this.imageCenter = new Vector2(rocketTexture.Width / 2f, rocketTexture.Height / 2f);
+            var upperLeftCorner = screenCenter - imageCenter;
+            _bounds = new RectangleF(upperLeftCorner.X, upperLeftCorner.Y, rocketTexture.Width, rocketTexture.Height);
             spriteBatch.Draw(this.rocketTexture, screenCenter, null, Color.White, this.angle, imageCenter, 1f, SpriteEffects.None, 0f);
+            spriteBatch.DrawRectangle((RectangleF)Bounds, Color.Red, 3);
+        }
+
+        public void Update(GameTime gameTime, Rocket playerRocket)
+        {
+            throw new NotImplementedException();
         }
 
         public void MoveCamera(GameTime gameTime)
@@ -53,9 +64,12 @@ namespace RocketBooster
             var seconds = gameTime.GetElapsedSeconds();
             var movementDirection = GetMovementDirection();
             this._cameraPosition += this.speed * movementDirection * seconds;
+            Bounds.Position += movementDirection * seconds;
         }
 
         public int Speed { get => speed; set => speed = value; }
+
+        public IShapeF Bounds => _bounds;
 
         public Vector2 GetMovementDirection()
         {
@@ -84,7 +98,6 @@ namespace RocketBooster
             if (movementDirection != Vector2.Zero)
             {
                 float targetAngle = MathF.Atan2(movementDirection.X, -movementDirection.Y);
-                Debug.WriteLine("Target Angle: " + targetAngle);
 
                 // Smoothly transition the current angle towards the target angle
                 float deltaAngle = targetAngle - this.angle;
@@ -101,6 +114,11 @@ namespace RocketBooster
             return movementDirection;
         }
 
+
+        public void OnCollision(CollisionEventArgs collisionInfo)
+        {
+            Debug.WriteLine("test");
+        }
     }
 } 
 

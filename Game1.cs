@@ -7,6 +7,7 @@ using MonoGame.Extended;
 using MonoGame.Extended.ViewportAdapters;
 using System.Collections.Generic;
 using System.Diagnostics;
+using MonoGame.Extended.Collisions;
 
 namespace RocketBooster
 {
@@ -21,6 +22,9 @@ namespace RocketBooster
         private SpriteFont camerapositionfont;
         private SpriteFont speedfont;
         private List<Asteroid> asteroids;
+        private readonly CollisionComponent _collisionComponent;
+        const int MapWidth = 10000000;
+        const int MapHeight = 10000000;
 
         private Rocket playerRocket;
 
@@ -29,6 +33,7 @@ namespace RocketBooster
         public Game1()
         {
             _graphics = new GraphicsDeviceManager(this);
+            _collisionComponent = new CollisionComponent(new RectangleF(0, 0, MapWidth, MapHeight));
             _graphics.PreferredBackBufferWidth = 1280;
             _graphics.PreferredBackBufferHeight = 720;
             _graphics.ApplyChanges();
@@ -41,11 +46,11 @@ namespace RocketBooster
             // Instanciate the camera
             var viewportadapter = new BoxingViewportAdapter(Window, GraphicsDevice, 1280, 720);
             _camera = new OrthographicCamera(viewportadapter);
-            // Instanciate the main rocket
-            playerRocket = new Rocket(_camera);
             // Get the center of the screen
             Viewport viewport = _graphics.GraphicsDevice.Viewport;
             screenCenter =  new Vector2(viewport.Width / 2f, viewport.Height / 2f);
+            // Instanciate the main rocket
+            playerRocket = new Rocket(_camera);
             // List of asteroid
             asteroids = new List<Asteroid>();
 
@@ -63,7 +68,9 @@ namespace RocketBooster
             foreach (var asteroid in asteroids)
             {
                 asteroid.LoadContent(Content);
+                _collisionComponent.Insert(asteroid);
             }
+            _collisionComponent.Insert(playerRocket);
             _tiledMapRenderer = new TiledMapRenderer(GraphicsDevice, _tiledMap);
             // Debug Panel
             camerapositionfont = Content.Load<SpriteFont>("CameraPosition");
@@ -86,6 +93,8 @@ namespace RocketBooster
                 asteroid.Update(gameTime, playerRocket);
             }
 
+            _collisionComponent.Update(gameTime);
+
             base.Update(gameTime);
         }
 
@@ -104,7 +113,7 @@ namespace RocketBooster
             // Draw asteroids
             foreach (var asteroid in asteroids)
             {
-                asteroid.Draw(_spriteBatch);
+                asteroid.Draw(_spriteBatch, this.screenCenter);
             }
             
             // End of the drawing
@@ -119,8 +128,8 @@ namespace RocketBooster
 
             foreach (var obj in objects)
             {
-                var asteroid = new Asteroid(this, obj.Position);
-                Debug.WriteLine("Asteroid position : ", asteroid.Position);
+                var asteroid = new Asteroid(this, obj.Position, new RectangleF(obj.Position, new Size2(500, 500)));
+                Debug.WriteLine(obj.Position);
                 asteroids.Add(asteroid);
             }
         }

@@ -12,6 +12,6 @@ namespace RocketBooster
     internal interface IEntity : ICollisionActor
     {
         public void Update(GameTime gameTime, Rocket playerRocket);
-        public void Draw(SpriteBatch spriteBatch);
+        public void Draw(SpriteBatch spriteBatch, Vector2 screenCenter);
     }
 }

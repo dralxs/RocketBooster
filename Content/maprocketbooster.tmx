@@ -55,7 +55,7 @@
 </data>
  </layer>
  <objectgroup id="2" name="AsteroidSpawn">
-  <object id="1" x="378.012" y="239.532">
+  <object id="1" x="78.012" y="239.532">
    <point/>
   </object>
   <object id="2" x="1341.75" y="334.971">

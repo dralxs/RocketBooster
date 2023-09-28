@@ -15,7 +15,7 @@ namespace RocketBooster
         private readonly Game1 _game;
         public Vector2 Position;
         public Vector2 Velocity;
-        public IShapeF Bounds { get; }
+        public IShapeF Bounds { get; set; }
 
         protected Obstacle(Game1 game, Vector2 position)
         {
@@ -24,16 +24,17 @@ namespace RocketBooster
             Velocity = new Vector2(100,0);
         }
 
-        public virtual void Draw(SpriteBatch spriteBatch)
+        public virtual void Draw(SpriteBatch spriteBatch, Vector2 screenCenter)
         {
-            spriteBatch.DrawRectangle((RectangleF)Bounds, Color.Red, 3);
+            
         }
 
         public virtual void OnCollision(CollisionEventArgs collisionInfo)
         {
-            Velocity.X *= -1;
-            Velocity.Y *= -1;
-            Bounds.Position -= collisionInfo.PenetrationVector;
+            //Velocity.X *= -1;
+            //Velocity.Y *= -1;
+            //Bounds.Position -= collisionInfo.PenetrationVector;
+            //this.Position -= collisionInfo.PenetrationVector;
         }
 
         public virtual void Update(GameTime gameTime, Rocket playerRocket)
