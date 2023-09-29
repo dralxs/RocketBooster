@@ -24,25 +24,12 @@ namespace RocketBooster
             Velocity = new Vector2(100,0);
         }
 
-        public virtual void Draw(SpriteBatch spriteBatch, Vector2 screenCenter)
+        public abstract void Draw(SpriteBatch spriteBatch, Vector2 screenCenter);
+        public virtual void Update(GameTime gameTime)
         {
-            
-        }
 
-        public virtual void OnCollision(CollisionEventArgs collisionInfo)
-        {
-            //Velocity.X *= -1;
-            //Velocity.Y *= -1;
-            //Bounds.Position -= collisionInfo.PenetrationVector;
-            //this.Position -= collisionInfo.PenetrationVector;
         }
-
-        public virtual void Update(GameTime gameTime, Rocket playerRocket)
-        {
-            Vector2 directionToPlayer = playerRocket._cameraPosition - this.Position;
-            directionToPlayer.Normalize();
-            this.Position += directionToPlayer * (float)gameTime.ElapsedGameTime.TotalSeconds;
-        }
-
+        public abstract void Update(GameTime gameTime, Rocket playerRocket);
+        public abstract void OnCollision(CollisionEventArgs collisionInfo);
     }
 }

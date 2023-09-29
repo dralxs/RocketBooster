@@ -13,23 +13,21 @@ namespace RocketBooster
 {
     public class Game1 : Game
     {
-
-        private GraphicsDeviceManager _graphics;
-        private SpriteBatch _spriteBatch;
-        TiledMap _tiledMap;
-        TiledMapRenderer _tiledMapRenderer;
-        private OrthographicCamera _camera;
-        private SpriteFont camerapositionfont;
-        private SpriteFont speedfont;
-        private List<Asteroid> asteroids;
-        private readonly CollisionComponent _collisionComponent;
         const int MapWidth = 10000000;
         const int MapHeight = 10000000;
 
+        private readonly CollisionComponent _collisionComponent;
+        private GraphicsDeviceManager _graphics;
+        private SpriteBatch _spriteBatch;
+        private OrthographicCamera _camera;
+        private TiledMap _tiledMap;
+        private TiledMapRenderer _tiledMapRenderer;
+        private Vector2 screenCenter;
+        private SpriteFont camerapositionfont;
+        private SpriteFont speedfont;
+        private List<Asteroid> asteroids;
         private Rocket playerRocket;
-
-        Vector2 screenCenter;
-
+        
         public Game1()
         {
             _graphics = new GraphicsDeviceManager(this);
@@ -63,37 +61,38 @@ namespace RocketBooster
             // Texture rocket
             playerRocket.LoadContent(this.Content);
             _tiledMap = Content.Load<TiledMap>("maprocketbooster");
+            // Spawn obstacles 
             SpawnObstacles(_tiledMap);
             // Texture asteroids
             foreach (var asteroid in asteroids)
             {
                 asteroid.LoadContent(Content);
+                // Add asteroids collisions
                 _collisionComponent.Insert(asteroid);
             }
+            // Add rocket collisions
             _collisionComponent.Insert(playerRocket);
+            // Render map
             _tiledMapRenderer = new TiledMapRenderer(GraphicsDevice, _tiledMap);
-            // Debug Panel
+            // Debug Panel 
             camerapositionfont = Content.Load<SpriteFont>("CameraPosition");
-            speedfont = Content.Load<SpriteFont>("Speed");
-            
+            speedfont = Content.Load<SpriteFont>("Speed");  
         }
 
         protected override void Update(GameTime gameTime)
         {
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
-                Exit();
-
-            _tiledMapRenderer.Update(gameTime);
-            // Update the camera 
-            playerRocket.MoveCamera(gameTime);
-            _camera.LookAt(playerRocket._cameraPosition);
+            // Update player
+            playerRocket.Update(gameTime);
+            _camera.LookAt(playerRocket.CameraPosition);
             // Update asteroids 
             foreach (var asteroid in asteroids)
             {
                 asteroid.Update(gameTime, playerRocket);
             }
-
+            // Update collisions
             _collisionComponent.Update(gameTime);
+            // Update map
+            _tiledMapRenderer.Update(gameTime);
 
             base.Update(gameTime);
         }
@@ -101,27 +100,30 @@ namespace RocketBooster
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
-
             // Start of the drawing 
             _spriteBatch.Begin();
-
             // Draw the rocket 
             playerRocket.Draw(_spriteBatch, this.screenCenter);
-            _spriteBatch.DrawString(camerapositionfont, "CameraPosition : " + playerRocket._cameraPosition, new Vector2(0,0), Color.Black);
-            _spriteBatch.DrawString(speedfont, "Speed : " + playerRocket.Speed, new Vector2(0, 15), Color.Black);
-            _tiledMapRenderer.Draw(_camera.GetViewMatrix());
             // Draw asteroids
             foreach (var asteroid in asteroids)
             {
                 asteroid.Draw(_spriteBatch, this.screenCenter);
             }
-            
+            // Draw the map
+            _tiledMapRenderer.Draw(_camera.GetViewMatrix());
+            // Draw Debug Panel
+            _spriteBatch.DrawString(camerapositionfont, "CameraPosition : " + playerRocket.CameraPosition, new Vector2(0, 0), Color.Black);
+            _spriteBatch.DrawString(speedfont, "Speed : " + playerRocket.Speed, new Vector2(0, 15), Color.Black);
             // End of the drawing
             _spriteBatch.End();
 
             base.Draw(gameTime);
         }
 
+        /** 
+         * @param tiledMap : map of the game
+         * @return void
+         */
         public void SpawnObstacles(TiledMap tiledMap)
         {
             var objects = tiledMap.GetLayer<TiledMapObjectLayer>("AsteroidSpawn").Objects;
@@ -129,7 +131,6 @@ namespace RocketBooster
             foreach (var obj in objects)
             {
                 var asteroid = new Asteroid(this, obj.Position, new RectangleF(obj.Position, new Size2(500, 500)));
-                Debug.WriteLine(obj.Position);
                 asteroids.Add(asteroid);
             }
         }

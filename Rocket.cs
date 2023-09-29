@@ -18,18 +18,22 @@ namespace RocketBooster
 {
     internal class Rocket : IEntity
     {
-        Texture2D rocketTexture;
-        private OrthographicCamera _camera;   
+        private const float RotationSpeed = 0.1f;
+        private Texture2D rocketTexture;
+        private OrthographicCamera _camera;
+        private Vector2 _cameraPosition;
+        private Vector2 imageCenter;
+        private RectangleF _bounds;
         private int speed;
         private int damage;
         private float angle;
-        private Vector2 imageCenter;
-        private const float RotationSpeed = 0.1f;
-        public Vector2 _cameraPosition;
-        private RectangleF _bounds;
 
-
-        // PUBLIC FUNCTION //
+        /**
+         * Getters / Setters
+         */
+        public int Speed { get => speed; set => speed = value; }
+        public IShapeF Bounds => _bounds;
+        public Vector2 CameraPosition => _cameraPosition;
 
         public Rocket(OrthographicCamera camera)
         {
@@ -37,12 +41,19 @@ namespace RocketBooster
             _cameraPosition = new Vector2(0, 0);
             Speed = 500;
             damage = 1;
-
         }
         
         public void LoadContent(ContentManager content)
         {
             this.rocketTexture = content.Load<Texture2D>("rocket1");
+        }
+
+        public void Update(GameTime gameTime)
+        {
+            var seconds = gameTime.GetElapsedSeconds();
+            var movementDirection = GetMovementDirection();
+            this._cameraPosition += this.speed * movementDirection * seconds;
+            Bounds.Position += movementDirection * seconds;
         }
 
         public void Draw(SpriteBatch spriteBatch, Vector2 screenCenter)
@@ -54,22 +65,10 @@ namespace RocketBooster
             spriteBatch.DrawRectangle((RectangleF)Bounds, Color.Red, 3);
         }
 
-        public void Update(GameTime gameTime, Rocket playerRocket)
+        public void OnCollision(CollisionEventArgs collisionInfo)
         {
-            throw new NotImplementedException();
+
         }
-
-        public void MoveCamera(GameTime gameTime)
-        {
-            var seconds = gameTime.GetElapsedSeconds();
-            var movementDirection = GetMovementDirection();
-            this._cameraPosition += this.speed * movementDirection * seconds;
-            Bounds.Position += movementDirection * seconds;
-        }
-
-        public int Speed { get => speed; set => speed = value; }
-
-        public IShapeF Bounds => _bounds;
 
         public Vector2 GetMovementDirection()
         {
@@ -112,12 +111,6 @@ namespace RocketBooster
             }
 
             return movementDirection;
-        }
-
-
-        public void OnCollision(CollisionEventArgs collisionInfo)
-        {
-            Debug.WriteLine("test");
         }
     }
 } 
